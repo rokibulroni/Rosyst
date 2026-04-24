@@ -64,11 +64,33 @@ By default, the Windows Firewall might block incoming Ping requests and SSH conn
 
 ---
 
-## Step 4: Connect from your Mac / Linux Machine
+## Step 4: Install Rosyst Core Dependencies
 
-Once both scripts have run successfully, the Windows machine is ready to accept remote connections!
+According to the `plan.md`, the Rosyst stack relies on Linux-based networking tools (ntopng, Zeek) and modern web frameworks. To support this on Windows, you need WSL, Docker, Node.js, and Python.
 
-1. Find the IP address of your Windows machine (the `enable_ssh.ps1` script prints this out for you at the end).
+We have created an automated script to install everything you need via Windows Package Manager (`winget`).
+
+```powershell
+# In the same Administrator PowerShell window, run:
+.\install_dependencies.ps1
+```
+
+**What this script does:**
+- Installs **Git** (for version control).
+- Installs **Node.js** (for the Next.js/React frontend).
+- Installs **Python 3.11** (for the FastAPI backend).
+- Installs **Docker Desktop** (required to containerize AdGuard Home and ntopng).
+- Enables **WSL (Windows Subsystem for Linux)**.
+
+> ⚠️ **CRITICAL:** After this script finishes, you **MUST restart your Windows machine**. Once restarted, open Docker Desktop from your Start menu to accept the license agreement so the engine can start.
+
+---
+
+## Step 5: Connect from your Mac / Linux Machine
+
+Once your machine has restarted and Docker is running, it is ready to act as your remote Rosyst server!
+
+1. Find the IP address of your Windows machine (the `enable_ssh.ps1` script printed this out for you).
 2. Open your Terminal on your Mac.
 3. Run the SSH command:
 
@@ -79,4 +101,4 @@ ssh your_windows_username@192.168.x.x
 
 4. Enter your Windows password when prompted.
 
-🎉 **You are now successfully connected to your Windows machine!**
+🎉 **You are now successfully connected to your Windows machine and ready to start building Rosyst!**
