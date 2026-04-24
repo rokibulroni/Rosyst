@@ -32,7 +32,7 @@ services:
     image: ntop/ntopng:latest
     container_name: ntopng
     restart: unless-stopped
-    command: ntopng --community -i any
+    command: ntopng --community -i any -l 1
     volumes:
       - ./data/ntopng:/var/lib/ntopng
     ports:

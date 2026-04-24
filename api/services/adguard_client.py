@@ -24,7 +24,7 @@ class AdGuardClient:
                 
                 devices = []
                 # AdGuard returns configured clients and auto-clients
-                all_clients = data.get("clients", []) + data.get("auto_clients", [])
+                all_clients = (data.get("clients") or []) + (data.get("auto_clients") or [])
                 
                 for client_data in all_clients:
                     devices.append({
@@ -33,6 +33,23 @@ class AdGuardClient:
                         "hostname": client_data.get("name", ""),
                         "is_active": True
                     })
+                if not devices:
+                    # Fallback to querylog to extract active IPs masked by Docker NAT
+                    q_res = await client.get(f"{self.url}/control/querylog", headers=self.headers, timeout=5.0)
+                    if q_res.status_code == 200:
+                        q_data = q_res.json()
+                        ips = set()
+                        for log in q_data.get("data", []):
+                            ips.add(log.get("client", ""))
+                        for ip in ips:
+                            if ip:
+                                devices.append({
+                                    "ip": ip,
+                                    "mac": "Network Masked",
+                                    "hostname": "Docker Gateway Network",
+                                    "is_active": True
+                                })
+
                 return devices
             except Exception as e:
                 print(f"AdGuard API Error (Clients): {e}")
@@ -58,6 +75,41 @@ class AdGuardClient:
                 return domains
             except Exception as e:
                 print(f"AdGuard API Error (QueryLog): {e}")
+                return []
+
+    async def get_stats(self):
+        """Fetches top queried domains and clients."""
+        async with httpx.AsyncClient() as client:
+            try:
+                response = await client.get(f"{self.url}/control/stats", headers=self.headers, timeout=5.0)
+                response.raise_for_status()
+                data = response.json()
+                return {
+                    "top_domains": data.get("top_queried_domains", [])[:10],
+                    "top_clients": data.get("top_clients", [])[:10]
+                }
+            except Exception as e:
+                print(f"AdGuard API Error (Stats): {e}")
+                return {"top_domains": [], "top_clients": []}
+
+
+    async def get_blocked_domains(self):
+        """Fetches the list of custom blocked domains."""
+        async with httpx.AsyncClient() as client:
+            try:
+                response = await client.get(f"{self.url}/control/filtering/status", headers=self.headers, timeout=5.0)
+                response.raise_for_status()
+                rules = response.json().get("user_rules", [])
+                # Extract domains from AdGuard syntax (||domain.com^)
+                blocked = []
+                for rule in rules:
+                    if rule.startswith("||") and rule.endswith("^"):
+                        blocked.append(rule[2:-1])
+                    else:
+                        blocked.append(rule)
+                return blocked
+            except Exception as e:
+                print(f"AdGuard API Error (BlockedDomains): {e}")
                 return []
 
     async def block_domain(self, domain: str):

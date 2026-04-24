@@ -1,5 +1,6 @@
 import os
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
 from models.schemas import Device, DomainQuery, TrafficStats
@@ -14,6 +15,14 @@ app = FastAPI(
     title="Rosyst API",
     description="Unified Backend API for Rosyst Local Network Intelligence",
     version="1.0.0"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 adguard = AdGuardClient()
@@ -38,6 +47,21 @@ async def get_domains():
     """
     domains = await adguard.get_query_log()
     return domains
+
+
+@app.get("/blocked", response_model=list[str])
+async def get_blocked():
+    """
+    Fetches the list of user-defined blocked domains.
+    """
+    return await adguard.get_blocked_domains()
+
+@app.get("/stats")
+async def get_stats():
+    """
+    Fetches the top queried domains.
+    """
+    return await adguard.get_stats()
 
 @app.get("/traffic", response_model=TrafficStats)
 async def get_traffic():
