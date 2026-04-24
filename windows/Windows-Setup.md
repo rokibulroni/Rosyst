@@ -86,19 +86,44 @@ We have created an automated script to install everything you need via Windows P
 
 ---
 
-## Step 5: Connect from your Mac / Linux Machine
+## Step 5: Route SSH Directly to WSL (Optional but Recommended)
 
-Once your machine has restarted and Docker is running, it is ready to act as your remote Rosyst server!
+By default, when you SSH into Windows, you land in a standard PowerShell session. Since we are using Docker and Linux tools, it's much faster if your SSH connection drops you directly into your Ubuntu environment.
 
-1. Find the IP address of your Windows machine (the `enable_ssh.ps1` script printed this out for you).
-2. Open your Terminal on your Mac.
-3. Run the SSH command:
+Run this final script as Administrator:
+
+```powershell
+.\set_wsl_default_ssh.ps1
+```
+
+This changes a single registry key so that any incoming SSH connection bypasses Windows PowerShell entirely and instantly opens your WSL terminal.
+
+---
+
+## Step 6: Connect & Spin Up the Rosyst Core Engine
+
+Once your machine has restarted and Docker is running, you are ready to deploy the Phase 2 Core Engine!
+
+1. Open your Terminal on your Mac.
+2. Run the SSH command:
 
 ```bash
 ssh your_windows_username@192.168.x.x
 ```
 *(Replace `your_windows_username` with your actual Windows account username and `192.168.x.x` with the IP address).*
 
-4. Enter your Windows password when prompted.
+3. Clone your repository into the Ubuntu environment:
 
-🎉 **You are now successfully connected to your Windows machine and ready to start building Rosyst!**
+```bash
+git clone https://github.com/rokibulroni/Rosyst.git
+cd Rosyst/windows
+```
+
+4. Spin up the Core Engine using Docker:
+
+```bash
+docker compose up -d
+```
+
+🎉 **You have successfully deployed Rosyst Phase 1 & 2!** 
+You can now access your AdGuard Home setup wizard at `http://<windows-ip>:3000` and your ntopng dashboard at `http://<windows-ip>:3001` directly from your Mac's browser!

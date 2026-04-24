@@ -71,8 +71,8 @@ graph TD
 - [ ] Add firewall rules to redirect port 53 and block external DNS fallback (like 8.8.8.8).
 
 ### Phase 2: Core Engine (Data Collection)
-- [ ] **DNS Layer:** Install and configure AdGuard Home for domain visibility and query logging.
-- [ ] **Traffic Monitoring:** Install ntopng, bind it to the network interface, and enable local network detection.
+- [x] **DNS Layer:** Install and configure AdGuard Home for domain visibility and query logging.
+- [x] **Traffic Monitoring:** Install ntopng, bind it to the network interface, and enable local network detection.
 - [ ] *(Optional)* **Deep Analysis:** Integrate Zeek for richer HTTP/SSL metadata classification.
 
 ### Phase 3: Data & API Layer
@@ -88,7 +88,7 @@ graph TD
 ### Phase 5: Stability & Packaging
 - [ ] Configure log rotation and storage policies (7-30 days retention).
 - [ ] Optimize ntopng settings to reduce heavy logging overhead.
-- [ ] Dockerize the entire stack for simple deployment.
+- [x] Dockerize the entire stack for simple deployment.
 - [ ] Create a one-command install script (`curl install.rosyst.com | bash`).
 
 ---
