@@ -85,3 +85,14 @@ async def block_domain(request: BlockRequest):
         return {"status": "success", "blocked_domain": request.domain}
     else:
         return {"status": "success", "message": "Domain was already blocked", "blocked_domain": request.domain}
+
+@app.post("/unblock")
+async def unblock_domain(request: BlockRequest):
+    """
+    Instantly unblocks a domain by removing it from AdGuard Home filtering rules.
+    """
+    success = await adguard.unblock_domain(request.domain)
+    if success:
+        return {"status": "success", "unblocked_domain": request.domain}
+    else:
+        return {"status": "success", "message": "Domain was not blocked", "unblocked_domain": request.domain}
