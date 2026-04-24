@@ -99,7 +99,7 @@ class AdGuardClient:
             try:
                 response = await client.get(f"{self.url}/control/filtering/status", headers=self.headers, timeout=5.0)
                 response.raise_for_status()
-                rules = response.json().get("user_rules", [])
+                rules = response.json().get("user_rules") or []
                 # Extract domains from AdGuard syntax (||domain.com^)
                 blocked = []
                 for rule in rules:
@@ -119,7 +119,7 @@ class AdGuardClient:
                 # First fetch existing rules
                 get_rules = await client.get(f"{self.url}/control/filtering/status", headers=self.headers)
                 get_rules.raise_for_status()
-                rules = get_rules.json().get("user_rules", [])
+                rules = get_rules.json().get("user_rules") or []
                 
                 # Append new block rule
                 block_rule = f"||{domain}^"
