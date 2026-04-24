@@ -1,24 +1,5 @@
 services:
-  adguardhome:
-    image: adguard/adguardhome
-    container_name: adguardhome
-    restart: unless-stopped
-    volumes:
-      - ./data/adguard/work:/opt/adguardhome/work
-      - ./data/adguard/conf:/opt/adguardhome/conf
-    ports:
-      # DNS ports
-      - 53:53/tcp
-      - 53:53/udp
-      # DHCP port
-      - 67:67/udp
-      - 68:68/udp
-      # Web Interface
-      - 80:80/tcp
-      - 443:443/tcp
-      - 443:443/udp
-      # AdGuard Home initial setup interface
-      - 3000:3000/tcp
+
 
   redis:
     image: redis:alpine
@@ -49,5 +30,6 @@ services:
     env_file:
       - ../api/.env
     depends_on:
-      - adguardhome
       - ntopng
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
