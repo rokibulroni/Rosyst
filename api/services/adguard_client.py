@@ -138,3 +138,30 @@ class AdGuardClient:
             except Exception as e:
                 print(f"AdGuard API Error (BlockDomain): {e}")
                 raise HTTPException(status_code=500, detail="Failed to communicate with AdGuard API")
+
+    async def unblock_domain(self, domain: str):
+        """Removes a domain from AdGuard's custom filtering rules."""
+        async with httpx.AsyncClient() as client:
+            try:
+                # First fetch existing rules
+                get_rules = await client.get(f"{self.url}/control/filtering/status", headers=self.headers)
+                get_rules.raise_for_status()
+                rules = get_rules.json().get("user_rules") or []
+                
+                # Target block rule
+                block_rule = f"||{domain}^"
+                if block_rule in rules:
+                    rules.remove(block_rule)
+                    
+                    # Save rules back
+                    save_res = await client.post(
+                        f"{self.url}/control/filtering/set_rules", 
+                        headers=self.headers, 
+                        json={"rules": rules}
+                    )
+                    save_res.raise_for_status()
+                    return True
+                return False
+            except Exception as e:
+                print(f"AdGuard API Error (UnblockDomain): {e}")
+                raise HTTPException(status_code=500, detail="Failed to communicate with AdGuard API")
