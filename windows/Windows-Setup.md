@@ -145,3 +145,7 @@ If Docker Hub deprecates a specific image tag (like `:stable`), you can quickly 
 ```bash
 sed -i 's/:stable/:latest/g' docker-compose.yml
 ```
+
+### 3. API Connection Issues (ntopng or AdGuard)
+- **ntopng Auth**: The `docker-compose.yml` explicitly passes the `-l 1` flag to the `ntopng` container (`ntopng --community -i any -l 1`). This disables the login prompt for API requests, allowing the Rosyst FastAPI backend to scrape traffic statistics without needing the default admin password.
+- **AdGuard Rules**: The FastAPI backend (`api/services/adguard_client.py`) polls AdGuard for active filter rules to dynamically update the Next.js UI block buttons. If the AdGuard container resets, ensure you don't delete your `data/adguard` volume, or the custom sinkhole rules will be lost.

@@ -54,11 +54,11 @@ graph TD
 
 ## 🛠️ Tech Stack
 - **Core OS:** Linux, Windows (via WSL), macOS, or Raspberry Pi OS
-- **DNS & Ad-blocking Engine:** AdGuard Home
-- **Traffic Analysis Engine:** ntopng
+- **DNS & Ad-blocking Engine:** AdGuard Home (with dynamic `user_rules` API polling)
+- **Traffic Analysis Engine:** ntopng (running with `-l 1` flag to bypass API auth restrictions)
 - **Deep Packet Inspection (Optional):** Zeek
-- **Backend API:** FastAPI (Python) or Node.js
-- **Frontend UI:** Next.js / React
+- **Backend API:** FastAPI (Python)
+- **Frontend UI:** Next.js / React (Hot-reloading enabled)
 
 ---
 
@@ -76,9 +76,10 @@ graph TD
 - [ ] *(Optional)* **Deep Analysis:** Integrate Zeek for richer HTTP/SSL metadata classification.
 
 ### Phase 3: Data & API Layer
-- [ ] Design the core data model (Devices, Domains, Traffic).
-- [ ] Build a unified backend API to pull data simultaneously from the AdGuard and ntopng APIs.
-- [ ] Create endpoints for `/devices`, `/domains`, `/traffic`, and `/block`.
+- [x] Design the core data model (Devices, Domains, Traffic).
+- [x] Build a unified backend API to pull data simultaneously from the AdGuard and ntopng APIs.
+- [x] Create endpoints for `/devices`, `/domains`, `/traffic`, `/stats`, and `/blocked`.
+- [x] Ensure the API handles empty AdGuard block lists safely via dynamic array falling back.
 
 ### Phase 4: Product UI
 - [ ] Develop a fast, clutter-free Next.js dashboard.
