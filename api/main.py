@@ -1,7 +1,11 @@
 import os
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
 from dotenv import load_dotenv
+
+from models.schemas import Device, DomainQuery, TrafficStats
+from services.adguard_client import AdGuardClient
+from services.ntopng_client import NtopngClient
+from pydantic import BaseModel
 
 # Load environment variables
 load_dotenv()
@@ -12,33 +16,36 @@ app = FastAPI(
     version="1.0.0"
 )
 
+adguard = AdGuardClient()
+ntopng = NtopngClient()
+
 @app.get("/")
 async def root():
     return {"message": "Rosyst API is running!"}
 
-@app.get("/devices")
+@app.get("/devices", response_model=list[Device])
 async def get_devices():
     """
-    Fetches the list of all connected devices from AdGuard/ntopng.
+    Fetches the list of all connected devices from AdGuard Home.
     """
-    # TODO: Implement actual AdGuard/ntopng client calls
-    return {"devices": []}
+    devices = await adguard.get_clients()
+    return devices
 
-@app.get("/domains")
+@app.get("/domains", response_model=list[DomainQuery])
 async def get_domains():
     """
     Fetches the top domains and recent DNS queries from AdGuard Home.
     """
-    # TODO: Implement actual AdGuard client call
-    return {"domains": []}
+    domains = await adguard.get_query_log()
+    return domains
 
-@app.get("/traffic")
+@app.get("/traffic", response_model=TrafficStats)
 async def get_traffic():
     """
     Fetches real-time bandwidth usage and historical traffic data from ntopng.
     """
-    # TODO: Implement actual ntopng client call
-    return {"traffic": {}}
+    traffic = await ntopng.get_traffic_stats()
+    return traffic
 
 class BlockRequest(BaseModel):
     domain: str
@@ -47,7 +54,10 @@ class BlockRequest(BaseModel):
 @app.post("/block")
 async def block_domain(request: BlockRequest):
     """
-    Instantly blocks a domain either globally or for a specific client via AdGuard Home.
+    Instantly blocks a domain via AdGuard Home custom filtering rules.
     """
-    # TODO: Implement AdGuard filtering rules update
-    return {"status": "success", "blocked_domain": request.domain}
+    success = await adguard.block_domain(request.domain)
+    if success:
+        return {"status": "success", "blocked_domain": request.domain}
+    else:
+        return {"status": "success", "message": "Domain was already blocked", "blocked_domain": request.domain}
