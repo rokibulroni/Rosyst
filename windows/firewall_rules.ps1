@@ -16,8 +16,18 @@ $sshRule = Get-NetFirewallRule -Name "OpenSSH-Server-In-TCP" -ErrorAction Silent
 if (!$sshRule) {
     Write-Host "Creating Firewall Rule for SSH (Port 22)..."
     New-NetFirewallRule -Name 'OpenSSH-Server-In-TCP' -DisplayName 'OpenSSH Server (sshd)' -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 22
-} else {
     Write-Host "Firewall Rule for SSH already exists."
+}
+
+# Allow Rosyst Web Services (AdGuard, ntopng, API)
+$rosystRule = Get-NetFirewallRule -Name "Rosyst-Web-Services" -ErrorAction SilentlyContinue
+if (!$rosystRule) {
+    Write-Host "Creating Firewall Rule for Rosyst Web Services (Ports 80, 53, 3000, 3001, 8000)..."
+    New-NetFirewallRule -Name "Rosyst-Web-Services" -DisplayName "Rosyst Web Services" -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 80,3000,3001,8000
+    New-NetFirewallRule -Name "Rosyst-DNS-UDP" -DisplayName "Rosyst DNS (UDP)" -Enabled True -Direction Inbound -Protocol UDP -Action Allow -LocalPort 53
+    New-NetFirewallRule -Name "Rosyst-DNS-TCP" -DisplayName "Rosyst DNS (TCP)" -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 53
+} else {
+    Write-Host "Firewall Rule for Rosyst Web Services already exists."
 }
 
 Write-Host ""
