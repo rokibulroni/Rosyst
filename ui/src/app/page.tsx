@@ -16,10 +16,29 @@ export default function Home() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ domain })
       });
-      // Briefly show feedback or just rely on next poll to show it blocked (or just let the user know)
       setTimeout(() => setBlockingDomain(null), 1000);
     } catch (err) {
       console.error("Failed to block domain", err);
+      setBlockingDomain(null);
+    }
+  };
+
+  const handleUnblock = async (rule: string) => {
+    setBlockingDomain(rule);
+    try {
+      // rule is like ||domain.com^, strip it to get domain
+      let domain = rule;
+      if (rule.startsWith("||") && rule.endsWith("^")) {
+        domain = rule.slice(2, -1);
+      }
+      await fetch('http://192.168.8.247:8000/unblock', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ domain })
+      });
+      setTimeout(() => setBlockingDomain(null), 1000);
+    } catch (err) {
+      console.error("Failed to unblock domain", err);
       setBlockingDomain(null);
     }
   };
@@ -162,8 +181,25 @@ export default function Home() {
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               {blockedDomains.map((domain, idx) => (
-                <div key={idx} className="list-item" style={{ padding: '0.5rem 0', opacity: 0.8 }}>
+                <div key={idx} className="list-item" style={{ padding: '0.5rem 0', opacity: 0.8, alignItems: 'center' }}>
                   <span className="domain-name" style={{ color: 'var(--danger)' }}>{domain}</span>
+                  <button 
+                    onClick={() => handleUnblock(domain)}
+                    disabled={blockingDomain === domain}
+                    style={{
+                      padding: '0.25rem 0.75rem',
+                      borderRadius: '4px',
+                      border: '1px solid var(--accent)',
+                      backgroundColor: 'transparent',
+                      color: 'var(--accent)',
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
+                      cursor: blockingDomain === domain ? 'default' : 'pointer',
+                      transition: 'all 0.2s',
+                    }}
+                  >
+                    {blockingDomain === domain ? 'Removing...' : 'Unblock'}
+                  </button>
                 </div>
               ))}
             </div>
