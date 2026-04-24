@@ -38,9 +38,9 @@ class NtopngClient:
                 # Extract basic traffic stats from the complex ntopng payload
                 rsp = data.get("rsp", {})
                 return {
-                    "bytes_sent": rsp.get("bytesSent", 0),
-                    "bytes_recv": rsp.get("bytesRcvd", 0),
-                    "active_flows": rsp.get("numFlows", 0)
+                    "bytes_sent": rsp.get("bytes_upload", 0),
+                    "bytes_recv": rsp.get("bytes_download", 0),
+                    "active_flows": rsp.get("num_flows", 0)
                 }
             except Exception as e:
                 print(f"ntopng API Error (Traffic): {e}")
