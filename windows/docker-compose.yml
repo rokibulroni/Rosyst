@@ -3,16 +3,27 @@ services:
     image: adguard/adguardhome
     container_name: adguardhome
     restart: unless-stopped
-    network_mode: "host"
     volumes:
       - ./data/adguard/work:/opt/adguardhome/work
       - ./data/adguard/conf:/opt/adguardhome/conf
+    ports:
+      # DNS ports
+      - 53:53/tcp
+      - 53:53/udp
+      # DHCP port
+      - 67:67/udp
+      - 68:68/udp
+      # Web Interface
+      - 80:80/tcp
+      - 443:443/tcp
+      - 443:443/udp
+      # AdGuard Home initial setup interface
+      - 3000:3000/tcp
 
   redis:
     image: redis:alpine
     container_name: ntopng_redis
     restart: unless-stopped
-    network_mode: "host"
     command: redis-server --save 900 1 --loglevel warning
     volumes:
       - ./data/redis:/data
@@ -21,10 +32,11 @@ services:
     image: ntop/ntopng:latest
     container_name: ntopng
     restart: unless-stopped
-    network_mode: "host"
-    command: ntopng --community -i any -w 3001
+    command: ntopng --community -i any
     volumes:
       - ./data/ntopng:/var/lib/ntopng
+    ports:
+      - 3001:3000
     depends_on:
       - redis
 
@@ -32,7 +44,8 @@ services:
     build: ../api
     container_name: rosyst_api
     restart: unless-stopped
-    network_mode: "host"
+    ports:
+      - 8000:8000
     env_file:
       - ../api/.env
     depends_on:
