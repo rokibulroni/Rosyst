@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  adguardhome:
+    image: adguard/adguardhome
+    container_name: adguardhome
+    restart: unless-stopped
+    volumes:
+      - ./data/adguard/work:/opt/adguardhome/work
+      - ./data/adguard/conf:/opt/adguardhome/conf
+    ports:
+      # DNS ports
+      - 53:53/tcp
+      - 53:53/udp
+      # DHCP port (optional, if you use AdGuard as DHCP server)
+      - 67:67/udp
+      - 68:68/udp
+      # Web Interface
+      - 80:80/tcp
+      - 443:443/tcp
+      - 443:443/udp
+      # AdGuard Home initial setup interface
+      - 3000:3000/tcp
+
+  redis:
+    image: redis:alpine
+    container_name: ntopng_redis
+    restart: unless-stopped
+    command: redis-server --save 900 1 --loglevel warning
+    volumes:
+      - ./data/redis:/data
+
+  ntopng:
+    image: ntop/ntopng:stable
+    container_name: ntopng
+    restart: unless-stopped
+    # Use community edition flag to avoid license prompts
+    command: ntopng --community -i any
+    volumes:
+      - ./data/ntopng:/var/lib/ntopng
+    ports:
+      # Mapped to 3001 so it doesn't conflict with AdGuard's setup on port 3000
+      - 3001:3000
+    depends_on:
+      - redis
