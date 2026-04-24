@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   adguardhome:
     image: adguard/adguardhome
@@ -31,7 +29,7 @@ services:
       - ./data/redis:/data
 
   ntopng:
-    image: ntop/ntopng:stable
+    image: ntop/ntopng:latest
     container_name: ntopng
     restart: unless-stopped
     # Use community edition flag to avoid license prompts
