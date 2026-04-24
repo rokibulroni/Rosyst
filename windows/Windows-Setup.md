@@ -127,3 +127,21 @@ docker compose up -d
 
 🎉 **You have successfully deployed Rosyst Phase 1 & 2!** 
 You can now access your AdGuard Home setup wizard at `http://<windows-ip>:3000` and your ntopng dashboard at `http://<windows-ip>:3001` directly from your Mac's browser!
+
+---
+
+## 🛠️ Troubleshooting
+
+If you encounter errors when running `docker compose up -d` over your SSH connection, here are the most common fixes:
+
+### 1. "A specified logon session does not exist"
+This occurs because Docker tries to use the Windows graphical credential manager over an invisible SSH tunnel. Since these are public images, you can safely bypass this by running:
+```bash
+sed -i '/"credsStore":/d' ~/.docker/config.json
+```
+
+### 2. "failed to resolve reference... not found"
+If Docker Hub deprecates a specific image tag (like `:stable`), you can quickly update your `docker-compose.yml` to pull the `:latest` version by running:
+```bash
+sed -i 's/:stable/:latest/g' docker-compose.yml
+```
