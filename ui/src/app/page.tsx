@@ -115,8 +115,8 @@ export default function Home() {
           {domains.length === 0 ? (
             <p style={{ color: 'var(--muted)' }}>Waiting for DNS traffic...</p>
           ) : (
-            <div>
-              {domains.slice(0, 10).map((log: Record<string, unknown>, idx) => {
+            <div style={{ maxHeight: '400px', overflowY: 'auto', paddingRight: '0.5rem' }}>
+              {domains.slice(0, 500).map((log: Record<string, unknown>, idx) => {
                 // It's blocked if either it was blocked at query time, OR it's currently in the active blocklist
                 const isBlocked = log.status === 'FilteredBlackList' || log.status === 'Filtered' || blockedDomains.includes(log.domain as string);
                 return (
