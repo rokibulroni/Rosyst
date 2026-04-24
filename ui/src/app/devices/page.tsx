@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 interface Device {
   ip: string;
@@ -30,9 +31,9 @@ export default function Devices() {
       </header>
 
       <nav style={{ display: 'flex', gap: '2rem', marginBottom: '3rem', borderBottom: '1px solid var(--card-border)', paddingBottom: '1rem' }}>
-        <a href="/" style={{ color: 'var(--muted)', textDecoration: 'none' }}>Dashboard</a>
-        <a href="/devices" style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 600 }}>Devices</a>
-        <a href="/control" style={{ color: 'var(--muted)', textDecoration: 'none' }}>Control Center</a>
+        <Link href="/" style={{ color: 'var(--muted)', textDecoration: 'none' }}>Dashboard</Link>
+        <Link href="/devices" style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 600 }}>Devices</Link>
+        <Link href="/control" style={{ color: 'var(--muted)', textDecoration: 'none' }}>Control Center</Link>
       </nav>
 
       <div className="glass-card" style={{ marginBottom: '2rem' }}>

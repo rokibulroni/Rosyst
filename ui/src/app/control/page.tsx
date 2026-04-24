@@ -1,5 +1,6 @@
 "use client";
 import { useState } from 'react';
+import Link from 'next/link';
 
 export default function Control() {
   const [domain, setDomain] = useState('');
@@ -23,9 +24,10 @@ export default function Control() {
         message: data.message || `Successfully blocked ${domain} across the network.`, 
         type: 'success' 
       });
+      setTimeout(() => setStatus(null), 2000);
       setDomain('');
-    } catch (err) {
-      setStatus({ message: 'Failed to connect to Rosyst API.', type: 'error' });
+    } catch {
+      setStatus({ message: 'Failed to update rules. Make sure the API is running.', type: 'error' });
     } finally {
       setLoading(false);
     }
@@ -39,9 +41,9 @@ export default function Control() {
       </header>
 
       <nav style={{ display: 'flex', gap: '2rem', marginBottom: '3rem', borderBottom: '1px solid var(--card-border)', paddingBottom: '1rem' }}>
-        <a href="/" style={{ color: 'var(--muted)', textDecoration: 'none' }}>Dashboard</a>
-        <a href="/devices" style={{ color: 'var(--muted)', textDecoration: 'none' }}>Devices</a>
-        <a href="/control" style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 600 }}>Control Center</a>
+        <Link href="/" style={{ color: 'var(--muted)', textDecoration: 'none' }}>Dashboard</Link>
+        <Link href="/devices" style={{ color: 'var(--muted)', textDecoration: 'none' }}>Devices</Link>
+        <Link href="/control" style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 600 }}>Control Center</Link>
       </nav>
 
       <div className="glass-card" style={{ maxWidth: '600px', margin: '0 auto' }}>
