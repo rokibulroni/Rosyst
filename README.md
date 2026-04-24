@@ -53,7 +53,7 @@ graph TD
 ---
 
 ## 🛠️ Tech Stack
-- **Core OS:** Ubuntu Server
+- **Core OS:** Linux, Windows (via WSL), macOS, or Raspberry Pi OS
 - **DNS & Ad-blocking Engine:** AdGuard Home
 - **Traffic Analysis Engine:** ntopng
 - **Deep Packet Inspection (Optional):** Zeek
@@ -65,7 +65,7 @@ graph TD
 ## 🗺️ Roadmap & Implementation Phases
 
 ### Phase 1: Foundation (Infrastructure)
-- [ ] Set up Ubuntu Server on a dedicated Mini PC.
+- [ ] Set up the host OS (Linux, Windows, macOS, or Raspberry Pi) on a dedicated Mini PC or Server.
 - [ ] Assign a static IP (e.g., `192.168.1.10`).
 - [ ] Configure the local router to force DHCP DNS traffic through the Rosyst server.
 - [ ] Add firewall rules to redirect port 53 and block external DNS fallback (like 8.8.8.8).
